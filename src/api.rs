@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::errors::DaiHentaiError::{ApiError};
 
 use crate::book;
@@ -159,4 +161,49 @@ impl DaiHentaiAPI {
       return Ok(books)
    }
 
+
+   pub fn search(&self, query: &String, page: i64, sort: book::SortOption) -> VecBookResult {
+      let mut params: HashMap<String, String> = HashMap::new();
+      params.insert("q".to_string(), query.clone().to_string());
+      params.insert("query".to_string(), query.clone().to_string());
+      
+      if page >= 1 {
+         params.insert("page".to_string(), stringify!(page).to_string());
+      }
+
+      if let Some(sort) = book::format_sort_option(&sort) {
+         params.insert("sort".to_string(), sort);
+      }
+
+      let data = self.send_request(
+         &format!("{}/api/galleries/search", consts::BASE_URL),
+         &reqwest::Method::GET,
+         Some(&params)
+      );
+
+      let resp = match data {
+         Ok(_resp) => _resp, 
+         Err(e) => return Err(Box::new(ApiError(format!("failed to fetch book with {:?} error: {}", query, e)))),
+      };
+
+      let json_str = &resp.text().unwrap();
+      let galleries: gallery::Galleries = match serde_json::from_str(&json_str) {
+         Ok(_data) => _data,
+         Err(e) => {
+            println!("{:?}", json_str);
+            return Err(Box::new(ApiError(format!("failed to parse JSON result error: {}", e))));
+         }
+      };
+
+      let mut books: Vec<book::Book> = Vec::new();
+      for gallery in galleries.result.iter() {
+         match gallery.to_book() {
+            Ok(_book) => books.push(_book),
+            Err(e) => return Err(Box::new(ApiError(format!("failed to parse result into Book error: {}", e)))),
+         }
+      }
+
+      return Ok(books)
+
+   }
 }

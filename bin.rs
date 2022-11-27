@@ -2,7 +2,8 @@ use daihentai::api::DaiHentaiAPI;
 use daihentai::book;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-   let nuke_code = std::env::args().nth(1).expect("Please specify your nuke code");
+   // let nuke_code = std::env::args().nth(1).expect("Please specify your nuke code");
+   let nuke_string = std::env::args().nth(1).expect("Please specify taste");
 
    let api = match DaiHentaiAPI::new() {
       Ok(_api) => _api, 
@@ -20,7 +21,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
    // println!("tags: {}", book::format_tags(&book.raw_tags, &book::TagOption::Tags).unwrap());
    // println!("pages: {}", book.num_pages);
    
-   let books: Vec<book::Book> = match api.get_related(nuke_code.parse::<i64>().unwrap()) {
+   let books: Vec<book::Book> = match api.search(&nuke_string, 1, book::SortOption::Date) {
       Ok(_books) => _books, 
       Err(e) => return Err(e),
    };

@@ -10,7 +10,7 @@ pub struct Galleries {
     #[serde(skip_serializing_if="Option::is_none")]
     pub num_pages: Option<i64>,
     #[serde(skip_serializing_if="Option::is_none")]
-    pub per_pages: Option<i64>,
+    pub per_page: Option<i64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

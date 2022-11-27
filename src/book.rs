@@ -29,14 +29,14 @@ pub enum SortOption {
    Date
 }
 
-pub fn format_sort_option(opt: &SortOption) -> Result<String, Box<dyn std::error::Error>> {
+pub fn format_sort_option(opt: &SortOption) -> Option<String> {
    match opt {
-      SortOption::Popular => return Ok("popular".to_string()),
-      SortOption::PopularYear => return Ok("popular-year".to_string()),
-      SortOption::PopularMonth => return Ok("popular-month".to_string()),
-      SortOption::PopularWeek => return Ok("popular-week".to_string()),
-      SortOption::PopularToday => return Ok("popular-today".to_string()),
-      SortOption::Date => return Ok("date".to_string()),
+      SortOption::Popular => return Some("popular".to_string()),
+      SortOption::PopularYear => return Some("popular-year".to_string()),
+      SortOption::PopularMonth => return Some("popular-month".to_string()),
+      SortOption::PopularWeek => return Some("popular-week".to_string()),
+      SortOption::PopularToday => return Some("popular-today".to_string()),
+      SortOption::Date => return Some("date".to_string()),
    }
 }
 
