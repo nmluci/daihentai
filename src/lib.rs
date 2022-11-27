@@ -1,4 +1,7 @@
-pub mod http;
 pub mod gallery;
 pub mod book;
-pub mod parser;
+pub mod api;
+pub mod errors;
+pub(crate) mod http;
+pub(crate) mod parser;
+pub(crate) mod consts;
