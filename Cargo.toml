@@ -5,6 +5,15 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+name = "daihentai"
+path = "src/lib.rs"
+
+
+[[bin]]
+name = "daihentai-demo"
+path = "bin.rs"
+
 [dependencies]
 reqwest = { version = "0.11", features = ["json"] }
 tokio = { version = "1", features = ["full"] }

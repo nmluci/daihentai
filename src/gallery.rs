@@ -1,20 +1,9 @@
-use super::book::{get_ext, Book, BookTags, Page, RawImage, Title};
-use crate::utils::parser::parse_int;
+use crate::book::{get_ext, Book, BookTags, Page, RawImage, Title};
+use crate::parser::parse_int;
 use core::fmt;
 use std::borrow::Borrow;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum IDType {
-    I64,
-    String,
-}
-
-impl fmt::Display for IDType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
-    }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Galleries {
