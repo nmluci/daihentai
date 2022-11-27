@@ -1,4 +1,3 @@
-use std::{collections::HashMap};
 use crate::errors::DaiHentaiError::{ApiError};
 
 use crate::book;
@@ -129,6 +128,35 @@ impl DaiHentaiAPI {
          Ok(book) => return Ok(book),
          Err(e) => return Err(Box::new(ApiError(format!("failed to parse result into Book error: {}", e))))
       }   
+   }
+
+   pub fn get_related(&self, id: i64) -> VecBookResult {
+      let data = self.send_request(
+         &format!("{}/api/gallery/{}/related", consts::BASE_URL, id),
+         &reqwest::Method::GET,
+         None
+      );
+
+      let resp = match data {
+         Ok(_resp) => _resp,
+         Err(e) => return Err(Box::new(ApiError(format!("failed to fetch related book for: {} error: {}", id, e)))),
+      };
+
+      let json_str = &resp.text().unwrap();
+      let galleries: gallery::Galleries = match serde_json::from_str(&json_str) {
+         Ok(_data) => _data, 
+         Err(e) => return Err(Box::new(ApiError(format!("failed to parse JSON result error: {}", e)))),
+      };
+
+      let mut books: Vec<book::Book> = Vec::new();
+      for gallery in galleries.result.iter() {
+         match gallery.to_book() {
+            Ok(_book) => books.push(_book),
+            Err(e) => return Err(Box::new(ApiError(format!("failed to parse result into Book error: {}", e)))),
+         }
+      }
+
+      return Ok(books)
    }
 
 }
