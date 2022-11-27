@@ -1,6 +1,5 @@
 use crate::book::{get_ext, Book, BookTags, Page, RawImage, Title};
 use crate::parser::parse_int;
-use core::fmt;
 use std::borrow::Borrow;
 use serde::{Deserialize, Serialize};
 
@@ -55,8 +54,9 @@ impl Gallery {
         };
 
         data.id = match &self.id {
-            i64 => self.id.as_i64().unwrap(),
-            str => parse_int(self.id.as_str().unwrap().to_string().borrow()),
+            _i64 if self.id.is_i64() => self.id.as_i64().unwrap(),
+            _str if self.id.is_string() => parse_int(self.id.as_str().unwrap().to_string().borrow()),
+            _ => 0
         };
 
         for (idx, page) in self.images.pages.iter().enumerate() {
