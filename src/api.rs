@@ -13,6 +13,8 @@ type VecBookResult = Result<Vec<book::Book>, Box<dyn std::error::Error>>;
 pub struct DaiHentaiAPI {
    pub(crate) user_agent: String,
    pub(crate) cookie: String,
+   pub(crate) proxy_url: String, 
+   pub(crate) override_baseurl: bool,
    pub(crate) client: reqwest::blocking::Client,
 }
 
@@ -23,6 +25,8 @@ impl DaiHentaiAPI {
       let mut api = DaiHentaiAPI{
          user_agent: "".to_string(),
          cookie: "".to_string(),
+         proxy_url: config::get_optional_config("NH_PROXY_URL".to_string()),
+         override_baseurl: config::get_optional_config("USE_PROXY".to_string()).parse().unwrap_or(false), 
          client: match DaiHentaiAPI::init_client() {
             Ok(_client) => _client, 
             Err(e) => return Err(e),
@@ -67,8 +71,13 @@ impl DaiHentaiAPI {
    }
 
    pub fn get_by_id(&self, id: i64) -> BookResult {
+      let mut base_url = consts::BASE_URL;
+      if self.override_baseurl && self.proxy_url.len() != 0 {
+         base_url = &self.proxy_url;
+      }
+
       let data = self.send_request(
-         &format!("{}/api/gallery/{}", consts::BASE_URL, id),
+         &format!("{}/api/gallery/{}", base_url, id),
          &reqwest::Method::GET,
          None
       );
@@ -89,7 +98,7 @@ impl DaiHentaiAPI {
       }   
    }
    
-   pub fn get_random(&self) -> BookResult {   
+   pub fn get_random(&self) -> BookResult {
       let _data = self.send_request(
          &format!("{}/random/", consts::BASE_URL),
          &reqwest::Method::GET,
@@ -133,8 +142,13 @@ impl DaiHentaiAPI {
    }
 
    pub fn get_related(&self, id: i64) -> VecBookResult {
+      let mut base_url = consts::BASE_URL;
+      if self.override_baseurl && self.proxy_url.len() != 0 {
+         base_url = &self.proxy_url;
+      }
+      
       let data = self.send_request(
-         &format!("{}/api/gallery/{}/related", consts::BASE_URL, id),
+         &format!("{}/api/gallery/{}/related", base_url, id),
          &reqwest::Method::GET,
          None
       );
@@ -163,6 +177,11 @@ impl DaiHentaiAPI {
 
 
    pub fn search(&self, query: &String, page: i64, sort: book::SortOption) -> VecBookResult {
+      let mut base_url = consts::BASE_URL;
+      if self.override_baseurl && self.proxy_url.len() != 0 {
+         base_url = &self.proxy_url;
+      }
+
       let mut params: HashMap<String, String> = HashMap::new();
       params.insert("q".to_string(), query.clone().to_string());
       params.insert("query".to_string(), query.clone().to_string());
@@ -176,7 +195,7 @@ impl DaiHentaiAPI {
       }
 
       let data = self.send_request(
-         &format!("{}/api/galleries/search", consts::BASE_URL),
+         &format!("{}/api/galleries/search", base_url),
          &reqwest::Method::GET,
          Some(&params)
       );
@@ -190,7 +209,6 @@ impl DaiHentaiAPI {
       let galleries: gallery::Galleries = match serde_json::from_str(&json_str) {
          Ok(_data) => _data,
          Err(e) => {
-            println!("{:?}", json_str);
             return Err(Box::new(ApiError(format!("failed to parse JSON result error: {}", e))));
          }
       };

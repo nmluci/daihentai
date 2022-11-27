@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
    };
 
    for book in books.iter() {
-      println!("[{}] {}\n\tTags: {}\n", book.id, book.title.pretty, book::format_tags(&book.raw_tags, &book::TagOption::Tags).unwrap())
+      println!("[{}] {}\n\tCover: {}\n\tTags: {}\n", book.id, book.title.pretty, book.cover, book::format_tags(&book.raw_tags, &book::TagOption::Tags).unwrap())
    }
 
    Ok(())

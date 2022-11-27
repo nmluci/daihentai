@@ -12,3 +12,12 @@ pub fn get_config(key: String) -> Result<String, Box<dyn std::error::Error>> {
       Err(_) => return Err(Box::new(ConfigError(_key))),
    };
 }
+
+pub fn get_optional_config(key: String) -> String {
+   let _key = key.clone();
+
+   match std::env::var(key) {
+      Ok(val) => return val,
+      Err(_) => return "".to_string(),
+   };
+}

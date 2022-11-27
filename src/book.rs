@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use crate::parser::deserialize_nullable;
 
 pub enum TagOption {
    Lang, 
@@ -42,8 +43,11 @@ pub fn format_sort_option(opt: &SortOption) -> Option<String> {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Title {
+   #[serde(deserialize_with = "deserialize_nullable")]
    pub english: String,
+   #[serde(deserialize_with = "deserialize_nullable")]
    pub japanese: String, 
+   #[serde(deserialize_with = "deserialize_nullable")]
    pub pretty: String
 }
 

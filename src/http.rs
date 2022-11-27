@@ -15,7 +15,6 @@ impl DaiHentaiAPI {
 
    pub(crate) fn send_request(&self, url: &String, method: &reqwest::Method, params: Option<&HashMap<String, String>>) -> Result<reqwest::blocking::Response, Box<dyn std::error::Error>> {
       let mut req = self.client.request(method.clone(), url.clone());
-      // req = req.header("User-Agent", format!("daihentai v{}", consts::LIB_VER));
       req = match config::get_config("USER_AGENT".to_string()) {
          Ok(key) => req.header("user-agent", key),
          Err(e) => return Err(e),
